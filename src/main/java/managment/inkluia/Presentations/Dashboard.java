@@ -26,21 +26,147 @@ public class Dashboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        btnUsuarios = new javax.swing.JButton();
+        btnTiposDiscapacidad = new javax.swing.JButton();
+        btnVacantes = new javax.swing.JButton();
+        btnPostulaciones = new javax.swing.JButton();
+        btnCursos = new javax.swing.JButton();
+        btnInscripciones = new javax.swing.JButton();
+        btnIndicadores = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("InkluIA - Dashboard Principal");
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Sistema de Gestión InkluIA");
+
+        btnUsuarios.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnUsuarios.setText("Gestionar Usuarios");
+        btnUsuarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUsuariosActionPerformed(evt);
+            }
+        });
+
+        btnTiposDiscapacidad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnTiposDiscapacidad.setText("Tipos de Discapacidad");
+        btnTiposDiscapacidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTiposDiscapacidadActionPerformed(evt);
+            }
+        });
+
+        btnVacantes.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnVacantes.setText("Gestionar Vacantes");
+        btnVacantes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVacantesActionPerformed(evt);
+            }
+        });
+
+        btnPostulaciones.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnPostulaciones.setText("Gestionar Postulaciones");
+        btnPostulaciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPostulacionesActionPerformed(evt);
+            }
+        });
+
+        btnCursos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnCursos.setText("Gestionar Cursos");
+        btnCursos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCursosActionPerformed(evt);
+            }
+        });
+
+        btnInscripciones.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnInscripciones.setText("Inscripciones a Cursos");
+        btnInscripciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInscripcionesActionPerformed(evt);
+            }
+        });
+
+        btnIndicadores.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnIndicadores.setText("Gestionar Indicadores");
+        btnIndicadores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIndicadoresActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 554, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnTiposDiscapacidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnVacantes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnPostulaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCursos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnInscripciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnIndicadores, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 428, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel1)
+                .addGap(30, 30, 30)
+                .addComponent(btnUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnTiposDiscapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnVacantes, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnPostulaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnCursos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnInscripciones, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnIndicadores, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuariosActionPerformed
+        new UsuarioFrame().setVisible(true);
+    }//GEN-LAST:event_btnUsuariosActionPerformed
+
+    private void btnTiposDiscapacidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTiposDiscapacidadActionPerformed
+        new TipoDiscapacidadFrame().setVisible(true);
+    }//GEN-LAST:event_btnTiposDiscapacidadActionPerformed
+
+    private void btnVacantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVacantesActionPerformed
+        new VacanteFrame().setVisible(true);
+    }//GEN-LAST:event_btnVacantesActionPerformed
+
+    private void btnPostulacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPostulacionesActionPerformed
+        new PostulacionFrame().setVisible(true);
+    }//GEN-LAST:event_btnPostulacionesActionPerformed
+
+    private void btnCursosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCursosActionPerformed
+        new CursoFrame().setVisible(true);
+    }//GEN-LAST:event_btnCursosActionPerformed
+
+    private void btnInscripcionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInscripcionesActionPerformed
+        new InscripcionFrame().setVisible(true);
+    }//GEN-LAST:event_btnInscripcionesActionPerformed
+
+    private void btnIndicadoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIndicadoresActionPerformed
+        new IndicadorFrame().setVisible(true);
+    }//GEN-LAST:event_btnIndicadoresActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +204,13 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCursos;
+    private javax.swing.JButton btnIndicadores;
+    private javax.swing.JButton btnInscripciones;
+    private javax.swing.JButton btnPostulaciones;
+    private javax.swing.JButton btnTiposDiscapacidad;
+    private javax.swing.JButton btnUsuarios;
+    private javax.swing.JButton btnVacantes;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }

@@ -8,13 +8,13 @@ public class Propiedades {
         Properties props = new Properties();
         
         // Manejo de errores de properties
-        try (InputStream input = ConexionDB.class.getClassLoader().getResourceAsStream("db.properties")) {
+        try (InputStream input = ConexionDB.class.getClassLoader().getResourceAsStream("Inkludb.properties")) {
             if (input == null) {
-                throw new RuntimeException("No se encontró el archivo db.properties en other resources");
+                throw new RuntimeException("No se encontró el archivo Inkludb.properties en other Sources");
             }
             props.load(input);
         } catch (Exception e) {
-            throw new RuntimeException("Error al cargar db.properties: " + e.getMessage(), e);
+            throw new RuntimeException("Error al cargar Inkludb.properties: " + e.getMessage(), e);
         }    
         return props;
     }
