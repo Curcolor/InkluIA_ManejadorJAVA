@@ -57,13 +57,11 @@ public class Vacante {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public static List<Vacante> obtenerTodas() {
+    }    public static List<Vacante> obtenerTodas() {
         List<Vacante> vacantes = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
-             CallableStatement stmt = conn.prepareCall("{call sp_ObtenerVacantes}");
-             ResultSet rs = stmt.executeQuery()) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_Vacantes ORDER BY FechaPublicacion DESC")) {
             
             while (rs.next()) {
                 Vacante vacante = new Vacante();
@@ -107,22 +105,21 @@ public class Vacante {
             e.printStackTrace();
             return false;
         }
-    }
-
-    // Método para obtener vacantes con información de empresa usando la vista
+    }    // Método para obtener vacantes con información de empresa usando la vista
     public static List<Object[]> obtenerVacantesConEmpresas() {
         List<Object[]> vacantes = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_VacantesConEmpresas")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_VacantesCompletas ORDER BY FechaPublicacion DESC")) {
             
             while (rs.next()) {
                 Object[] vacante = {
                     rs.getInt("IdVacante"),
+                    rs.getString("NombreEmpresa"),
                     rs.getString("Titulo"),
                     rs.getString("Descripcion"),
-                    rs.getTimestamp("FechaPublicacion"),
-                    rs.getString("Empresa")
+                    rs.getString("SectorEmpresa"),
+                    rs.getTimestamp("FechaPublicacion")
                 };
                 vacantes.add(vacante);
             }

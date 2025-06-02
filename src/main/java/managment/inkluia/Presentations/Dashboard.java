@@ -29,6 +29,7 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btnUsuarios = new javax.swing.JButton();
         btnTiposDiscapacidad = new javax.swing.JButton();
+        btnEmpresas = new javax.swing.JButton();
         btnVacantes = new javax.swing.JButton();
         btnPostulaciones = new javax.swing.JButton();
         btnCursos = new javax.swing.JButton();
@@ -55,6 +56,14 @@ public class Dashboard extends javax.swing.JFrame {
         btnTiposDiscapacidad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTiposDiscapacidadActionPerformed(evt);
+            }
+        });
+
+        btnEmpresas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnEmpresas.setText("Gestionar Empresas");
+        btnEmpresas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEmpresasActionPerformed(evt);
             }
         });
 
@@ -108,6 +117,7 @@ public class Dashboard extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnUsuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnTiposDiscapacidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEmpresas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnVacantes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnPostulaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnCursos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -124,6 +134,8 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(btnUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnTiposDiscapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnEmpresas, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnVacantes, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -147,6 +159,10 @@ public class Dashboard extends javax.swing.JFrame {
     private void btnTiposDiscapacidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTiposDiscapacidadActionPerformed
         new TipoDiscapacidadFrame().setVisible(true);
     }//GEN-LAST:event_btnTiposDiscapacidadActionPerformed
+
+    private void btnEmpresasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEmpresasActionPerformed
+        new EmpresaFrame().setVisible(true);
+    }//GEN-LAST:event_btnEmpresasActionPerformed
 
     private void btnVacantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVacantesActionPerformed
         new VacanteFrame().setVisible(true);
@@ -205,6 +221,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCursos;
+    private javax.swing.JButton btnEmpresas;
     private javax.swing.JButton btnIndicadores;
     private javax.swing.JButton btnInscripciones;
     private javax.swing.JButton btnPostulaciones;

@@ -97,20 +97,19 @@ public class Postulacion {
             e.printStackTrace();
             return false;
         }
-    }
-
-    // Método para obtener postulaciones con detalle usando la vista
+    }    // Método para obtener postulaciones con detalle usando la vista
     public static List<Object[]> obtenerPostulacionesDetalle() {
         List<Object[]> postulaciones = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_PostulacionesDetalle")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_PostulacionesCompletas ORDER BY FechaPostulacion DESC")) {
             
             while (rs.next()) {
                 Object[] postulacion = {
                     rs.getInt("IdPostulacion"),
-                    rs.getString("Talento"),
-                    rs.getString("Vacante"),
+                    rs.getString("NombreTalento"),
+                    rs.getString("TituloVacante"),
+                    rs.getString("NombreEmpresa"),
                     rs.getString("Estado"),
                     rs.getTimestamp("FechaPostulacion")
                 };

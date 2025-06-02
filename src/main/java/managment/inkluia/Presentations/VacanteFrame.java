@@ -1,7 +1,7 @@
 package managment.inkluia.Presentations;
 
 import managment.inkluia.Businesslogic.Vacante;
-import managment.inkluia.Businesslogic.Usuario;
+import managment.inkluia.Businesslogic.Empresa;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -37,7 +37,6 @@ public class VacanteFrame extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
-        btnVerConEmpresas = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Vacantes");
@@ -107,12 +106,6 @@ public class VacanteFrame extends javax.swing.JFrame {
 
         txtId.setEditable(false);
 
-        btnVerConEmpresas.setText("Ver con Empresas (Vista)");
-        btnVerConEmpresas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVerConEmpresasActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -143,8 +136,7 @@ public class VacanteFrame extends javax.swing.JFrame {
                         .addComponent(btnEliminar)
                         .addGap(18, 18, 18)
                         .addComponent(btnLimpiar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnVerConEmpresas)))
+                        .addGap(18, 18, 18)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -178,8 +170,7 @@ public class VacanteFrame extends javax.swing.JFrame {
                     .addComponent(btnAgregar)
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar)
-                    .addComponent(btnLimpiar)
-                    .addComponent(btnVerConEmpresas))
+                    .addComponent(btnLimpiar))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -188,15 +179,11 @@ public class VacanteFrame extends javax.swing.JFrame {
 
     private void inicializarTabla() {
         modeloTabla = (DefaultTableModel) tablaVacantes.getModel();
-    }
-
-    private void cargarEmpresas() {
+    }    private void cargarEmpresas() {
         cmbEmpresa.removeAllItems();
-        List<Usuario> usuarios = Usuario.obtenerTodos();
-        for (Usuario usuario : usuarios) {
-            if ("Empresa".equals(usuario.getRol())) {
-                cmbEmpresa.addItem(usuario.getIdUsuario() + " - " + usuario.getNombreCompleto());
-            }
+        List<Empresa> empresas = Empresa.obtenerTodas();
+        for (Empresa empresa : empresas) {
+            cmbEmpresa.addItem(empresa.getIdEmpresa() + " - " + empresa.getNombreEmpresa());
         }
     }
 
@@ -213,19 +200,15 @@ public class VacanteFrame extends javax.swing.JFrame {
             };
             modeloTabla.addRow(fila);
         }
-    }
-
-    private void cargarDatosConVista() {
+    }    private void cargarDatosConVista() {
         modeloTabla.setRowCount(0);
         List<Object[]> vacantes = Vacante.obtenerVacantesConEmpresas();
         for (Object[] vacante : vacantes) {
             modeloTabla.addRow(vacante);
         }
-    }
-
-    private String obtenerNombreEmpresa(int idEmpresa) {
-        Usuario empresa = Usuario.obtener(idEmpresa);
-        return empresa != null ? empresa.getNombreCompleto() : "Empresa no encontrada";
+    }private String obtenerNombreEmpresa(int idEmpresa) {
+        Empresa empresa = Empresa.obtener(idEmpresa);
+        return empresa != null ? empresa.getNombreEmpresa() : "Empresa no encontrada";
     }
 
     private int obtenerIdEmpresa(String texto) {
@@ -300,9 +283,6 @@ public class VacanteFrame extends javax.swing.JFrame {
         limpiarCampos();
     }
 
-    private void btnVerConEmpresasActionPerformed(java.awt.event.ActionEvent evt) {
-        cargarDatosConVista();
-    }
 
     private void tablaVacantesMouseClicked(java.awt.event.MouseEvent evt) {
         int fila = tablaVacantes.getSelectedRow();
@@ -348,7 +328,6 @@ public class VacanteFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLimpiar;
-    private javax.swing.JButton btnVerConEmpresas;
     private javax.swing.JComboBox<String> cmbEmpresa;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

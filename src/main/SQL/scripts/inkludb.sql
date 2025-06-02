@@ -17,6 +17,19 @@ CREATE TABLE Usuarios (
     FOREIGN KEY (IdDiscapacidad) REFERENCES Tipos_Discapacidad(IdDiscapacidad)
 );
 
+-- Tabla: Empresas
+CREATE TABLE Empresas (
+    IdEmpresa INT PRIMARY KEY IDENTITY,
+    NombreEmpresa NVARCHAR(150) NOT NULL,
+    NIT NVARCHAR(20) UNIQUE NOT NULL,
+    Direccion NVARCHAR(255),
+    Telefono NVARCHAR(20),
+    CorreoContacto NVARCHAR(100),
+    Sector NVARCHAR(100),
+    Descripcion NVARCHAR(MAX),
+    FechaRegistro DATETIME DEFAULT GETDATE()
+);
+
 -- Tabla: Vacantes
 CREATE TABLE Vacantes (
     IdVacante INT PRIMARY KEY IDENTITY,
@@ -25,7 +38,7 @@ CREATE TABLE Vacantes (
     Descripcion NVARCHAR(MAX),
     Requisitos NVARCHAR(MAX),
     FechaPublicacion DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (IdEmpresa) REFERENCES Usuarios(IdUsuario)
+    FOREIGN KEY (IdEmpresa) REFERENCES Empresas(IdEmpresa)
 );
 
 -- Tabla: Postulaciones

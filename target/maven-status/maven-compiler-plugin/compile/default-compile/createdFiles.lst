@@ -29,6 +29,8 @@ managment\inkluia\Presentations\Dashboard$7.class
 managment\inkluia\Presentations\CursoFrame.class
 managment\inkluia\InkluIA.class
 managment\inkluia\Businesslogic\Postulacion.class
+managment\inkluia\Presentations\EmpresaFrame$1.class
+managment\inkluia\Presentations\CursoFrame$7.class
 managment\inkluia\Presentations\VacanteFrame$3.class
 managment\inkluia\Presentations\CursoFrame$2.class
 managment\inkluia\Presentations\UsuarioFrame$1.class
@@ -47,9 +49,11 @@ managment\inkluia\Presentations\VacanteFrame.class
 managment\inkluia\Presentations\CursoFrame$6.class
 managment\inkluia\Presentations\TipoDiscapacidadFrame$4.class
 managment\inkluia\Presentations\PostulacionFrame$3.class
-managment\inkluia\Presentations\VacanteFrame$7.class
+managment\inkluia\Presentations\EmpresaFrame.class
 managment\inkluia\Presentations\TipoDiscapacidadFrame$2.class
 managment\inkluia\Presentations\VacanteFrame$4.class
+managment\inkluia\Businesslogic\Empresa.class
+managment\inkluia\Presentations\Dashboard$9.class
 managment\inkluia\Presentations\VacanteFrame$1.class
 managment\inkluia\Presentations\CursoFrame$5.class
 managment\inkluia\Presentations\Dashboard.class

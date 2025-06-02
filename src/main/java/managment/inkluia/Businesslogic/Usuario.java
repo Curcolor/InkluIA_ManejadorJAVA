@@ -129,13 +129,11 @@ public class Usuario {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public static List<Usuario> obtenerTodos() {
+    }    public static List<Usuario> obtenerTodos() {
         List<Usuario> usuarios = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM Usuarios")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_Usuarios ORDER BY NombreCompleto")) {
             
             while (rs.next()) {
                 Usuario usuario = new Usuario();

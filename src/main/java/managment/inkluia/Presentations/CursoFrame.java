@@ -28,11 +28,11 @@ public class CursoFrame extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         txtAccesibilidad = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        txtUrl = new javax.swing.JTextField();
-        btnAgregar = new javax.swing.JButton();
+        txtUrl = new javax.swing.JTextField();        btnAgregar = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
+        btnVerInscripciones = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -94,10 +94,16 @@ public class CursoFrame extends javax.swing.JFrame {
         btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLimpiarActionPerformed(evt);
-            }
-        });
+            }        });
 
         txtId.setEditable(false);
+
+        btnVerInscripciones.setText("Ver Inscripciones");
+        btnVerInscripciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerInscripcionesActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -119,15 +125,16 @@ public class CursoFrame extends javax.swing.JFrame {
                             .addComponent(txtUrl, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                             .addComponent(txtId))
                         .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE))                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAgregar)
                         .addGap(18, 18, 18)
                         .addComponent(btnActualizar)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
                         .addGap(18, 18, 18)
-                        .addComponent(btnLimpiar)))
+                        .addComponent(btnLimpiar)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnVerInscripciones)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -156,12 +163,12 @@ public class CursoFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtUrl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(30, 30, 30)                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar)
-                    .addComponent(btnLimpiar))
+                    .addComponent(btnLimpiar)
+                    .addComponent(btnVerInscripciones))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -279,8 +286,24 @@ public class CursoFrame extends javax.swing.JFrame {
         txtId.setText("");
         txtTitulo.setText("");
         txtDescripcion.setText("");
-        txtAccesibilidad.setText("");
-        txtUrl.setText("");
+        txtAccesibilidad.setText("");        txtUrl.setText("");
+    }
+
+    private void btnVerInscripcionesActionPerformed(java.awt.event.ActionEvent evt) {
+        cargarDatosConInscripciones();
+    }
+
+    private void cargarDatosConInscripciones() {
+        modeloTabla.setRowCount(0);
+        List<Object[]> cursosInscritos = Curso.obtenerCursosInscritos();
+        
+        // Cambiar headers de la tabla para mostrar inscripciones
+        String[] columnas = {"ID Curso", "Título", "ID Usuario", "Nombre Usuario", "Fecha Inscripción"};
+        modeloTabla.setColumnIdentifiers(columnas);
+        
+        for (Object[] cursoInscrito : cursosInscritos) {
+            modeloTabla.addRow(cursoInscrito);
+        }
     }
 
     // Variables declaration
@@ -288,6 +311,7 @@ public class CursoFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLimpiar;
+    private javax.swing.JButton btnVerInscripciones;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

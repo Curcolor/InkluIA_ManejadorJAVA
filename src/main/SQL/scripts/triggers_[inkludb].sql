@@ -426,3 +426,95 @@ BEGIN
     FROM deleted;
 END;
 GO
+
+-- Triggers para Empresas
+CREATE TRIGGER trg_Empresas_Audit
+ON dbo.Empresas
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Insert
+    IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO dbo.AuditoriaCambios (Tabla, Operacion, Usuario, Datos)
+        SELECT 'Empresas', 'INSERT', SUSER_NAME(), 
+               (SELECT * FROM inserted FOR XML AUTO)
+    END
+    
+    -- Update
+    IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO dbo.AuditoriaCambios (Tabla, Operacion, Usuario, Datos)
+        SELECT 'Empresas', 'UPDATE', SUSER_NAME(), 
+               (SELECT 
+                   d.IdEmpresa as 'Anterior.IdEmpresa',
+                   d.NombreEmpresa as 'Anterior.NombreEmpresa',
+                   d.NIT as 'Anterior.NIT',
+                   i.IdEmpresa as 'Nuevo.IdEmpresa',
+                   i.NombreEmpresa as 'Nuevo.NombreEmpresa',
+                   i.NIT as 'Nuevo.NIT'
+                FROM deleted d 
+                JOIN inserted i ON d.IdEmpresa = i.IdEmpresa
+                FOR XML AUTO)
+    END
+    
+    -- Delete
+    IF EXISTS (SELECT * FROM deleted) AND NOT EXISTS (SELECT * FROM inserted)
+    BEGIN
+        INSERT INTO dbo.AuditoriaCambios (Tabla, Operacion, Usuario, Datos)
+        SELECT 'Empresas', 'DELETE', SUSER_NAME(), 
+               (SELECT * FROM deleted FOR XML AUTO)
+    END
+END;
+GO
+
+-- Trigger para validar NIT único en Empresas
+CREATE TRIGGER trg_ValidarNIT_Empresas
+ON dbo.Empresas
+INSTEAD OF INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Validar que el NIT no esté duplicado en INSERT
+    IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
+    BEGIN
+        IF EXISTS (SELECT 1 FROM Empresas E 
+                   JOIN inserted I ON E.NIT = I.NIT)
+        BEGIN
+            RAISERROR('El NIT ya existe para otra empresa', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+        
+        INSERT INTO Empresas (NombreEmpresa, NIT, Direccion, Telefono, CorreoContacto, Sector, Descripcion)
+        SELECT NombreEmpresa, NIT, Direccion, Telefono, CorreoContacto, Sector, Descripcion
+        FROM inserted;
+    END
+    
+    -- Validar que el NIT no esté duplicado en UPDATE
+    IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+    BEGIN
+        IF EXISTS (SELECT 1 FROM Empresas E 
+                   JOIN inserted I ON E.NIT = I.NIT AND E.IdEmpresa != I.IdEmpresa)
+        BEGIN
+            RAISERROR('El NIT ya existe para otra empresa', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+        
+        UPDATE E SET 
+            NombreEmpresa = I.NombreEmpresa,
+            NIT = I.NIT,
+            Direccion = I.Direccion,
+            Telefono = I.Telefono,
+            CorreoContacto = I.CorreoContacto,
+            Sector = I.Sector,
+            Descripcion = I.Descripcion
+        FROM Empresas E
+        JOIN inserted I ON E.IdEmpresa = I.IdEmpresa;
+    END
+END;
+GO

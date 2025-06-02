@@ -85,19 +85,18 @@ public class Indicador {
             e.printStackTrace();
             return false;
         }
-    }
-
-    // Método para obtener indicadores con información de usuario usando la vista
+    }    // Método para obtener indicadores con información de usuario usando la vista
     public static List<Object[]> obtenerIndicadoresUsuarios() {
         List<Object[]> indicadores = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_IndicadoresUsuarios")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_IndicadoresCompletos ORDER BY FechaRegistro DESC")) {
             
             while (rs.next()) {
                 Object[] indicador = {
                     rs.getInt("IdIndicador"),
                     rs.getString("NombreCompleto"),
+                    rs.getString("Rol"),
                     rs.getString("Tipo"),
                     rs.getBigDecimal("Valor"),
                     rs.getTimestamp("FechaRegistro")

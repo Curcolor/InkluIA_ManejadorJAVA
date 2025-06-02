@@ -104,4 +104,51 @@ public class Curso {
             return false;
         }
     }
+      // Método para obtener cursos inscritos usando la vista
+    public static List<Object[]> obtenerCursosInscritos() {
+        List<Object[]> cursosInscritos = new ArrayList<>();
+        try (Connection conn = ConexionDB.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_CursosInscritos ORDER BY FechaInscripcion DESC")) {
+            
+            while (rs.next()) {
+                Object[] cursoInscrito = {
+                    rs.getInt("IdCurso"),
+                    rs.getString("Titulo"),
+                    rs.getInt("IdUsuario"),
+                    rs.getString("NombreCompleto"),
+                    rs.getTimestamp("FechaInscripcion")
+                };
+                cursosInscritos.add(cursoInscrito);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cursosInscritos;
+    }
+    
+    // Método para obtener cursos con estadísticas de inscripciones
+    public static List<Object[]> obtenerCursosConInscripciones() {
+        List<Object[]> cursos = new ArrayList<>();
+        try (Connection conn = ConexionDB.conectar();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_CursosConInscripciones ORDER BY TituloCurso")) {
+            
+            while (rs.next()) {
+                Object[] curso = {
+                    rs.getInt("IdCurso"),
+                    rs.getString("TituloCurso"),
+                    rs.getString("Descripcion"),
+                    rs.getInt("Duracion"),
+                    rs.getString("Accesibilidad"),
+                    rs.getInt("TotalInscritos"),
+                    rs.getTimestamp("FechaCreacion")
+                };
+                cursos.add(curso);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cursos;
+    }
 }

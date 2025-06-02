@@ -255,3 +255,66 @@ AS
 BEGIN
     DELETE FROM Indicadores WHERE IdIndicador = @IdIndicador;
 END;
+
+-- Procedimientos para Empresas
+
+-- Crear empresa
+CREATE PROCEDURE sp_CrearEmpresa
+    @NombreEmpresa NVARCHAR(150),
+    @NIT NVARCHAR(20),
+    @Direccion NVARCHAR(255) = NULL,
+    @Telefono NVARCHAR(20) = NULL,
+    @CorreoContacto NVARCHAR(100) = NULL,
+    @Sector NVARCHAR(100) = NULL,
+    @Descripcion NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    INSERT INTO Empresas (NombreEmpresa, NIT, Direccion, Telefono, CorreoContacto, Sector, Descripcion)
+    VALUES (@NombreEmpresa, @NIT, @Direccion, @Telefono, @CorreoContacto, @Sector, @Descripcion);
+END;
+
+-- Obtener empresa por ID
+CREATE PROCEDURE sp_ObtenerEmpresa
+    @IdEmpresa INT
+AS
+BEGIN
+    SELECT * FROM Empresas WHERE IdEmpresa = @IdEmpresa;
+END;
+
+-- Obtener todas las empresas
+CREATE PROCEDURE sp_ObtenerEmpresas
+AS
+BEGIN
+    SELECT * FROM Empresas ORDER BY NombreEmpresa;
+END;
+
+-- Actualizar empresa
+CREATE PROCEDURE sp_ActualizarEmpresa
+    @IdEmpresa INT,
+    @NombreEmpresa NVARCHAR(150),
+    @NIT NVARCHAR(20),
+    @Direccion NVARCHAR(255) = NULL,
+    @Telefono NVARCHAR(20) = NULL,
+    @CorreoContacto NVARCHAR(100) = NULL,
+    @Sector NVARCHAR(100) = NULL,
+    @Descripcion NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    UPDATE Empresas
+    SET NombreEmpresa = @NombreEmpresa,
+        NIT = @NIT,
+        Direccion = @Direccion,
+        Telefono = @Telefono,
+        CorreoContacto = @CorreoContacto,
+        Sector = @Sector,
+        Descripcion = @Descripcion
+    WHERE IdEmpresa = @IdEmpresa;
+END;
+
+-- Eliminar empresa
+CREATE PROCEDURE sp_EliminarEmpresa
+    @IdEmpresa INT
+AS
+BEGIN
+    DELETE FROM Empresas WHERE IdEmpresa = @IdEmpresa;
+END;
