@@ -131,14 +131,14 @@ java -cp target/classes managment.inkluia.Tests.TestConexion
 - `CursosUsuarios` - Inscripciones
 - `Indicadores` - Métricas del sistema
 
-### Procedimientos Almacenados
+### Ejemplo de Algunos Procedimientos Almacenados
 Cada tabla tiene procedimientos para:
 - Insertar (`sp_Insertar[Tabla]`)
 - Actualizar (`sp_Actualizar[Tabla]`)
 - Eliminar (`sp_Eliminar[Tabla]`)
 - Obtener por ID (`sp_Obtener[Tabla]PorId`)
 
-### Vistas
+### Ejemplo de algunas Vistas
 - `vw_VacantesConEmpresas` - Vacantes con información de empresa
 - `vw_PostulacionesDetalle` - Postulaciones con detalles completos
 - `vw_CursosInscritos` - Inscripciones con información del curso
