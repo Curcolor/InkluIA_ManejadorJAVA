@@ -1,6 +1,8 @@
 package managment.inkluia.Presentations;
 
 import managment.inkluia.Businesslogic.Curso;
+import managment.inkluia.Businesslogic.CursoUsuario;
+import managment.inkluia.Businesslogic.Usuario;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.List;
 public class CursoFrame extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTabla;
+    private JButton btnBuscar;
+    private JTextField txtBusqueda;
+    private JLabel lblBuscar;
 
     public CursoFrame() {
         initComponents();
@@ -34,6 +39,11 @@ public class CursoFrame extends javax.swing.JFrame {
         btnLimpiar = new javax.swing.JButton();
         btnVerInscripciones = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
+        
+        // Componentes de búsqueda
+        txtBusqueda = new JTextField();
+        btnBuscar = new JButton();
+        lblBuscar = new JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Cursos");
@@ -97,6 +107,16 @@ public class CursoFrame extends javax.swing.JFrame {
             }        });
 
         txtId.setEditable(false);
+        
+        // Configuración de componentes de búsqueda
+        lblBuscar.setText("Buscar por título:");
+        txtBusqueda.setToolTipText("Buscar por título de curso");
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         btnVerInscripciones.setText("Ver Inscripciones");
         btnVerInscripciones.addActionListener(new java.awt.event.ActionListener() {
@@ -131,10 +151,15 @@ public class CursoFrame extends javax.swing.JFrame {
                         .addComponent(btnActualizar)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
+                        .addGap(18, 18, 18)                        .addComponent(btnLimpiar)
                         .addGap(18, 18, 18)
-                        .addComponent(btnLimpiar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnVerInscripciones)))
+                        .addComponent(btnVerInscripciones)
+                        .addGap(30, 30, 30)
+                        .addComponent(lblBuscar)
+                        .addGap(10, 10, 10)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnBuscar)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -168,7 +193,10 @@ public class CursoFrame extends javax.swing.JFrame {
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar)
                     .addComponent(btnLimpiar)
-                    .addComponent(btnVerInscripciones))
+                    .addComponent(btnVerInscripciones)
+                    .addComponent(lblBuscar)
+                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -289,21 +317,71 @@ public class CursoFrame extends javax.swing.JFrame {
         txtAccesibilidad.setText("");        txtUrl.setText("");
     }
 
-    private void btnVerInscripcionesActionPerformed(java.awt.event.ActionEvent evt) {
-        cargarDatosConInscripciones();
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        String tituloBusqueda = txtBusqueda.getText().trim();
+        
+        if (tituloBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todos los cursos
+            return;
+        }
+
+        try {
+            List<Curso> cursosEncontrados = Curso.buscarPorTitulo(tituloBusqueda);
+            modeloTabla.setRowCount(0);
+            
+            for (Curso curso : cursosEncontrados) {
+                Object[] fila = {
+                    curso.getIdCurso(),
+                    curso.getTitulo(),
+                    curso.getDescripcion(),
+                    curso.getAccesibilidad(),
+                    curso.getUrlContenido()
+                };
+                modeloTabla.addRow(fila);
+            }
+            
+            if (cursosEncontrados.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron cursos con el título: " + tituloBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar cursos: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void cargarDatosConInscripciones() {
+    private void btnVerInscripcionesActionPerformed(java.awt.event.ActionEvent evt) {
+        cargarDatosConInscripciones();
+    }    private void cargarDatosConInscripciones() {
         modeloTabla.setRowCount(0);
-        List<Object[]> cursosInscritos = Curso.obtenerCursosInscritos();
+        List<CursoUsuario> inscripciones = CursoUsuario.obtenerTodas();
         
         // Cambiar headers de la tabla para mostrar inscripciones
         String[] columnas = {"ID Curso", "Título", "ID Usuario", "Nombre Usuario", "Fecha Inscripción"};
         modeloTabla.setColumnIdentifiers(columnas);
         
-        for (Object[] cursoInscrito : cursosInscritos) {
-            modeloTabla.addRow(cursoInscrito);
+        for (CursoUsuario inscripcion : inscripciones) {
+            Object[] fila = {
+                inscripcion.getIdCurso(),
+                obtenerTituloCurso(inscripcion.getIdCurso()),
+                inscripcion.getIdUsuario(),
+                obtenerNombreUsuario(inscripcion.getIdUsuario()),
+                inscripcion.getFechaInscripcion()
+            };
+            modeloTabla.addRow(fila);
         }
+    }
+
+    private String obtenerTituloCurso(int idCurso) {
+        Curso curso = Curso.obtener(idCurso);
+        return curso != null ? curso.getTitulo() : "Curso no encontrado";
+    }
+
+    private String obtenerNombreUsuario(int idUsuario) {
+        Usuario usuario = Usuario.obtener(idUsuario);
+        return usuario != null ? usuario.getNombreCompleto() : "Usuario no encontrado";
     }
 
     // Variables declaration

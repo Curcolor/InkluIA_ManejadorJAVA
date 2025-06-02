@@ -8,6 +8,9 @@ import java.util.List;
 public class TipoDiscapacidadFrame extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTabla;
+    private JButton btnBuscar;
+    private JTextField txtBusqueda;
+    private JLabel lblBuscar;
 
     public TipoDiscapacidadFrame() {
         initComponents();
@@ -27,9 +30,13 @@ public class TipoDiscapacidadFrame extends javax.swing.JFrame {
         txtDescripcion = new javax.swing.JTextArea();
         btnAgregar = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
-        btnEliminar = new javax.swing.JButton();
-        btnLimpiar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();        btnLimpiar = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
+        
+        // Inicialización de componentes de búsqueda
+        lblBuscar = new JLabel();
+        txtBusqueda = new JTextField();
+        btnBuscar = new JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Tipos de Discapacidad");
@@ -90,6 +97,16 @@ public class TipoDiscapacidadFrame extends javax.swing.JFrame {
         });
 
         txtId.setEditable(false);
+        
+        // Configuración de componentes de búsqueda
+        lblBuscar.setText("Buscar por nombre:");
+        txtBusqueda.setToolTipText("Buscar por nombre de tipo de discapacidad");
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -107,15 +124,20 @@ public class TipoDiscapacidadFrame extends javax.swing.JFrame {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                             .addComponent(txtId))
                         .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAgregar)
                         .addGap(18, 18, 18)
                         .addComponent(btnActualizar)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
                         .addGap(18, 18, 18)
-                        .addComponent(btnLimpiar)))
+                        .addComponent(btnLimpiar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblBuscar)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnBuscar)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -136,12 +158,16 @@ public class TipoDiscapacidadFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(30, 30, 30)                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar)
                     .addComponent(btnLimpiar))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblBuscar)
+                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -245,15 +271,44 @@ public class TipoDiscapacidadFrame extends javax.swing.JFrame {
             return false;
         }
         return true;
-    }
-
-    private void limpiarCampos() {
+    }    private void limpiarCampos() {
         txtId.setText("");
         txtNombre.setText("");
         txtDescripcion.setText("");
     }
+    
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        String nombreBusqueda = txtBusqueda.getText().trim();
+        
+        if (nombreBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todos los tipos
+            return;
+        }
 
-    // Variables declaration
+        try {
+            List<TipoDiscapacidad> tiposEncontrados = TipoDiscapacidad.buscarPorNombre(nombreBusqueda);
+            modeloTabla.setRowCount(0);
+            
+            for (TipoDiscapacidad tipo : tiposEncontrados) {
+                Object[] fila = {
+                    tipo.getIdDiscapacidad(),
+                    tipo.getNombre(),
+                    tipo.getDescripcion()
+                };
+                modeloTabla.addRow(fila);
+            }
+            
+            if (tiposEncontrados.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron tipos de discapacidad con el nombre: " + nombreBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar tipos de discapacidad: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }    // Variables declaration
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnEliminar;

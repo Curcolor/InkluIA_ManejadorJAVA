@@ -1,6 +1,7 @@
 package managment.inkluia.Presentations;
 
 import managment.inkluia.Businesslogic.Indicador;
+import managment.inkluia.Businesslogic.Usuario;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -10,9 +11,9 @@ import java.util.List;
 
 public class IndicadorFrame extends JFrame {
     private JTable tablaIndicadores;
-    private DefaultTableModel modeloTabla;
-    private JTextField txtNombre, txtTipo, txtValor;
-    private JButton btnAgregar, btnEditar, btnEliminar, btnLimpiar, btnRefrescar;
+    private DefaultTableModel modeloTabla;    private JTextField txtNombre, txtTipo, txtValor;
+    private JButton btnAgregar, btnEditar, btnEliminar, btnLimpiar, btnRefrescar, btnBuscar;
+    private JTextField txtBusqueda;
     private Indicador indicadorBL;
     private int idSeleccionado = -1;
 
@@ -63,16 +64,21 @@ public class IndicadorFrame extends JFrame {
         btnEditar = new JButton("Editar");
         btnEliminar = new JButton("Eliminar");
         btnLimpiar = new JButton("Limpiar");
-        btnRefrescar = new JButton("Refrescar");
-
-        panelBotones.add(btnAgregar);
+        btnRefrescar = new JButton("Refrescar");        panelBotones.add(btnAgregar);
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnLimpiar);
         panelBotones.add(btnRefrescar);
 
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-        panelFormulario.add(panelBotones, gbc);        // Tabla
+        panelFormulario.add(panelBotones, gbc);        // Panel de búsqueda
+        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelBusqueda.setBorder(BorderFactory.createTitledBorder("Búsqueda"));
+        panelBusqueda.add(new JLabel("Buscar por tipo:"));
+        txtBusqueda = new JTextField(20);
+        panelBusqueda.add(txtBusqueda);
+        btnBuscar = new JButton("Buscar");
+        panelBusqueda.add(btnBuscar);// Tabla
         String[] columnas = {"ID", "Usuario", "Tipo", "Valor", "Fecha Registro"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -97,15 +103,16 @@ public class IndicadorFrame extends JFrame {
         });
 
         // Agregar eventos a botones
-        btnAgregar.addActionListener(e -> agregarIndicador());
-        btnEditar.addActionListener(e -> editarIndicador());
+        btnAgregar.addActionListener(e -> agregarIndicador());        btnEditar.addActionListener(e -> editarIndicador());
         btnEliminar.addActionListener(e -> eliminarIndicador());
         btnLimpiar.addActionListener(e -> limpiarFormulario());
         btnRefrescar.addActionListener(e -> cargarDatos());
+        btnBuscar.addActionListener(e -> buscarIndicador());
 
         // Agregar componentes al panel principal
         panelPrincipal.add(panelFormulario, BorderLayout.NORTH);
-        panelPrincipal.add(scrollPane, BorderLayout.CENTER);
+        panelPrincipal.add(panelBusqueda, BorderLayout.CENTER);
+        panelPrincipal.add(scrollPane, BorderLayout.SOUTH);
 
         add(panelPrincipal, BorderLayout.CENTER);
 
@@ -115,14 +122,23 @@ public class IndicadorFrame extends JFrame {
         
         // Estado inicial de botones
         btnEditar.setEnabled(false);
-        btnEliminar.setEnabled(false);
-    }    private void cargarDatos() {
+        btnEliminar.setEnabled(false);    }
+    
+    private void cargarDatos() {
         try {
-            List<Object[]> indicadores = Indicador.obtenerIndicadoresUsuarios();
+            List<Indicador> indicadores = Indicador.obtenerTodos();
             modeloTabla.setRowCount(0);
             
-            for (Object[] indicador : indicadores) {
-                modeloTabla.addRow(indicador);
+            for (Indicador indicador : indicadores) {
+                Object[] fila = {
+                    indicador.getIdIndicador(),
+                    obtenerNombreUsuario(indicador.getIdUsuario()),
+                    obtenerRolUsuario(indicador.getIdUsuario()),
+                    indicador.getTipo(),
+                    indicador.getValor(),
+                    indicador.getFechaRegistro()
+                };
+                modeloTabla.addRow(fila);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
@@ -236,5 +252,49 @@ public class IndicadorFrame extends JFrame {
         }
 
         return true;
+    }
+
+    private String obtenerNombreUsuario(int idUsuario) {
+        Usuario usuario = Usuario.obtener(idUsuario);
+        return usuario != null ? usuario.getNombreCompleto() : "Usuario no encontrado";
+    }    private String obtenerRolUsuario(int idUsuario) {
+        Usuario usuario = Usuario.obtener(idUsuario);
+        return usuario != null ? usuario.getRol() : "Rol no encontrado";
+    }
+    
+    private void buscarIndicador() {
+        String tipoBusqueda = txtBusqueda.getText().trim();
+        
+        if (tipoBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todos los indicadores
+            return;
+        }
+
+        try {
+            List<Indicador> indicadoresEncontrados = Indicador.buscarPorTipo(tipoBusqueda);
+            modeloTabla.setRowCount(0);
+            
+            for (Indicador indicador : indicadoresEncontrados) {
+                Object[] fila = {
+                    indicador.getIdIndicador(),
+                    obtenerNombreUsuario(indicador.getIdUsuario()),
+                    obtenerRolUsuario(indicador.getIdUsuario()),
+                    indicador.getTipo(),
+                    indicador.getValor(),
+                    indicador.getFechaRegistro()
+                };
+                modeloTabla.addRow(fila);
+            }
+            
+            if (indicadoresEncontrados.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron indicadores con el tipo: " + tipoBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar indicadores: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

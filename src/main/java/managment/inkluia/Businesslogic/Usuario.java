@@ -151,4 +151,29 @@ public class Usuario {
         }
         return usuarios;
     }
+
+    public static List<Usuario> buscarPorNombre(String nombre) {
+        List<Usuario> usuarios = new ArrayList<>();
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vw_Usuarios WHERE NombreCompleto LIKE ? ORDER BY NombreCompleto")) {
+            
+            stmt.setString(1, "%" + nombre + "%");
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Usuario usuario = new Usuario();
+                usuario.setIdUsuario(rs.getInt("IdUsuario"));
+                usuario.setNombreCompleto(rs.getString("NombreCompleto"));
+                usuario.setCorreo(rs.getString("Correo"));
+                usuario.setContrasena(rs.getString("Contrasena"));
+                usuario.setRol(rs.getString("Rol"));
+                usuario.setIdDiscapacidad(rs.getObject("IdDiscapacidad", Integer.class));
+                usuario.setFechaRegistro(rs.getTimestamp("FechaRegistro"));
+                usuarios.add(usuario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usuarios;
+    }
 }

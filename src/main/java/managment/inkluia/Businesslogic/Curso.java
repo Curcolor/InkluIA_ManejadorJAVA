@@ -55,6 +55,28 @@ public class Curso {
         }
     }
 
+    public static Curso obtener(int idCurso) {
+        try (Connection conn = ConexionDB.conectar();
+             CallableStatement stmt = conn.prepareCall("{call sp_ObtenerCurso(?)}")) {
+            
+            stmt.setInt(1, idCurso);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Curso curso = new Curso();
+                curso.setIdCurso(rs.getInt("IdCurso"));
+                curso.setTitulo(rs.getString("Titulo"));
+                curso.setDescripcion(rs.getString("Descripcion"));
+                curso.setAccesibilidad(rs.getString("Accesibilidad"));
+                curso.setUrlContenido(rs.getString("URLContenido"));
+                return curso;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<Curso> obtenerTodos() {
         List<Curso> cursos = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
@@ -93,6 +115,29 @@ public class Curso {
         }
     }
 
+    public static List<Curso> buscarPorTitulo(String titulo) {
+        List<Curso> cursos = new ArrayList<>();
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vw_Cursos WHERE Titulo LIKE ? ORDER BY Titulo")) {
+            
+            stmt.setString(1, "%" + titulo + "%");
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Curso curso = new Curso();
+                curso.setIdCurso(rs.getInt("IdCurso"));
+                curso.setTitulo(rs.getString("Titulo"));
+                curso.setDescripcion(rs.getString("Descripcion"));
+                curso.setAccesibilidad(rs.getString("Accesibilidad"));
+                curso.setUrlContenido(rs.getString("URLContenido"));
+                cursos.add(curso);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cursos;
+    }
+
     public static boolean eliminar(int idCurso) {
         try (Connection conn = ConexionDB.conectar();
              CallableStatement stmt = conn.prepareCall("{call sp_EliminarCurso(?)}")) {
@@ -101,54 +146,6 @@ public class Curso {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
-        }
-    }
-      // Método para obtener cursos inscritos usando la vista
-    public static List<Object[]> obtenerCursosInscritos() {
-        List<Object[]> cursosInscritos = new ArrayList<>();
-        try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_CursosInscritos ORDER BY FechaInscripcion DESC")) {
-            
-            while (rs.next()) {
-                Object[] cursoInscrito = {
-                    rs.getInt("IdCurso"),
-                    rs.getString("Titulo"),
-                    rs.getInt("IdUsuario"),
-                    rs.getString("NombreCompleto"),
-                    rs.getTimestamp("FechaInscripcion")
-                };
-                cursosInscritos.add(cursoInscrito);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return cursosInscritos;
-    }
-    
-    // Método para obtener cursos con estadísticas de inscripciones
-    public static List<Object[]> obtenerCursosConInscripciones() {
-        List<Object[]> cursos = new ArrayList<>();
-        try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_CursosConInscripciones ORDER BY TituloCurso")) {
-            
-            while (rs.next()) {
-                Object[] curso = {
-                    rs.getInt("IdCurso"),
-                    rs.getString("TituloCurso"),
-                    rs.getString("Descripcion"),
-                    rs.getInt("Duracion"),
-                    rs.getString("Accesibilidad"),
-                    rs.getInt("TotalInscritos"),
-                    rs.getTimestamp("FechaCreacion")
-                };
-                cursos.add(curso);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return cursos;
+            return false;        }
     }
 }

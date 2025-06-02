@@ -10,6 +10,9 @@ import java.util.List;
 public class PostulacionFrame extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTabla;
+    private JButton btnBuscar;
+    private JTextField txtBusqueda;
+    private JLabel lblBuscar;
 
     public PostulacionFrame() {
         initComponents();
@@ -36,6 +39,11 @@ public class PostulacionFrame extends javax.swing.JFrame {
         btnLimpiar = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
         btnVerDetalle = new javax.swing.JButton();
+        
+        // Componentes de búsqueda
+        txtBusqueda = new JTextField();
+        btnBuscar = new JButton();
+        lblBuscar = new JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Postulaciones");
@@ -95,12 +103,20 @@ public class PostulacionFrame extends javax.swing.JFrame {
             }
         });
 
-        txtId.setEditable(false);
-
-        btnVerDetalle.setText("Ver Detalle (Vista)");
+        txtId.setEditable(false);        btnVerDetalle.setText("Ver Detalle (Vista)");
         btnVerDetalle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVerDetalleActionPerformed(evt);
+            }
+        });
+        
+        // Configuración de componentes de búsqueda
+        lblBuscar.setText("Buscar por estado:");
+        txtBusqueda.setToolTipText("Buscar por estado de postulación");
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
             }
         });
 
@@ -129,10 +145,15 @@ public class PostulacionFrame extends javax.swing.JFrame {
                         .addComponent(btnActualizarEstado)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
+                        .addGap(18, 18, 18)                        .addComponent(btnLimpiar)
                         .addGap(18, 18, 18)
-                        .addComponent(btnLimpiar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnVerDetalle)))
+                        .addComponent(btnVerDetalle)
+                        .addGap(30, 30, 30)
+                        .addComponent(lblBuscar)
+                        .addGap(10, 10, 10)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnBuscar)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -157,13 +178,15 @@ public class PostulacionFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmbEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(30, 30, 30)                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
                     .addComponent(btnActualizarEstado)
                     .addComponent(btnEliminar)
                     .addComponent(btnLimpiar)
-                    .addComponent(btnVerDetalle))
+                    .addComponent(btnVerDetalle)
+                    .addComponent(lblBuscar)
+                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -207,11 +230,17 @@ public class PostulacionFrame extends javax.swing.JFrame {
         }
     }
 
-    private void cargarDatosConVista() {
-        modeloTabla.setRowCount(0);
-        List<Object[]> postulaciones = Postulacion.obtenerPostulacionesDetalle();
-        for (Object[] postulacion : postulaciones) {
-            modeloTabla.addRow(postulacion);
+    private void cargarDatosConVista() {        modeloTabla.setRowCount(0);
+        List<Postulacion> postulaciones = Postulacion.obtenerTodas();
+        for (Postulacion postulacion : postulaciones) {
+            Object[] fila = {
+                postulacion.getIdPostulacion(),
+                obtenerNombreUsuario(postulacion.getIdUsuario()),
+                obtenerTituloVacante(postulacion.getIdVacante()),
+                postulacion.getEstado(),
+                postulacion.getFechaPostulacion()
+            };
+            modeloTabla.addRow(fila);
         }
     }
 
@@ -221,13 +250,8 @@ public class PostulacionFrame extends javax.swing.JFrame {
     }
 
     private String obtenerTituloVacante(int idVacante) {
-        List<Vacante> vacantes = Vacante.obtenerTodas();
-        for (Vacante vacante : vacantes) {
-            if (vacante.getIdVacante() == idVacante) {
-                return vacante.getTitulo();
-            }
-        }
-        return "Vacante no encontrada";
+        Vacante vacante = Vacante.obtener(idVacante);
+        return vacante != null ? vacante.getTitulo() : "Vacante no encontrada";
     }
 
     private int obtenerId(String texto) {
@@ -342,8 +366,42 @@ public class PostulacionFrame extends javax.swing.JFrame {
     private void limpiarCampos() {
         txtId.setText("");
         if (cmbUsuario.getItemCount() > 0) cmbUsuario.setSelectedIndex(0);
-        if (cmbVacante.getItemCount() > 0) cmbVacante.setSelectedIndex(0);
-        cmbEstado.setSelectedIndex(0);
+        if (cmbVacante.getItemCount() > 0) cmbVacante.setSelectedIndex(0);        cmbEstado.setSelectedIndex(0);
+    }
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        String estadoBusqueda = txtBusqueda.getText().trim();
+        
+        if (estadoBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todas las postulaciones
+            return;
+        }
+
+        try {
+            List<Postulacion> postulacionesEncontradas = Postulacion.buscarPorEstado(estadoBusqueda);
+            modeloTabla.setRowCount(0);
+            
+            for (Postulacion postulacion : postulacionesEncontradas) {
+                Object[] fila = {
+                    postulacion.getIdPostulacion(),
+                    obtenerNombreUsuario(postulacion.getIdUsuario()),
+                    obtenerTituloVacante(postulacion.getIdVacante()),
+                    postulacion.getEstado(),
+                    postulacion.getFechaPostulacion()
+                };
+                modeloTabla.addRow(fila);
+            }
+            
+            if (postulacionesEncontradas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron postulaciones con el estado: " + estadoBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar postulaciones: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Variables declaration

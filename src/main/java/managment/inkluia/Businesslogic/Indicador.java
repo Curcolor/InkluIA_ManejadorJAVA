@@ -54,6 +54,28 @@ public class Indicador {
         }
     }
 
+    public static Indicador obtener(int idIndicador) {
+        try (Connection conn = ConexionDB.conectar();
+             CallableStatement stmt = conn.prepareCall("{call sp_ObtenerIndicador(?)}")) {
+            
+            stmt.setInt(1, idIndicador);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Indicador indicador = new Indicador();
+                indicador.setIdIndicador(rs.getInt("IdIndicador"));
+                indicador.setIdUsuario(rs.getInt("IdUsuario"));
+                indicador.setTipo(rs.getString("Tipo"));
+                indicador.setValor(rs.getBigDecimal("Valor"));
+                indicador.setFechaRegistro(rs.getTimestamp("FechaRegistro"));
+                return indicador;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<Indicador> obtenerTodos() {
         List<Indicador> indicadores = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
@@ -85,22 +107,23 @@ public class Indicador {
             e.printStackTrace();
             return false;
         }
-    }    // Método para obtener indicadores con información de usuario usando la vista
-    public static List<Object[]> obtenerIndicadoresUsuarios() {
-        List<Object[]> indicadores = new ArrayList<>();
+    }
+    
+    public static List<Indicador> buscarPorTipo(String tipo) {
+        List<Indicador> indicadores = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_IndicadoresCompletos ORDER BY FechaRegistro DESC")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Indicadores WHERE Tipo LIKE ? ORDER BY FechaRegistro DESC")) {
+            
+            stmt.setString(1, "%" + tipo + "%");
+            ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Object[] indicador = {
-                    rs.getInt("IdIndicador"),
-                    rs.getString("NombreCompleto"),
-                    rs.getString("Rol"),
-                    rs.getString("Tipo"),
-                    rs.getBigDecimal("Valor"),
-                    rs.getTimestamp("FechaRegistro")
-                };
+                Indicador indicador = new Indicador();
+                indicador.setIdIndicador(rs.getInt("IdIndicador"));
+                indicador.setIdUsuario(rs.getInt("IdUsuario"));
+                indicador.setTipo(rs.getString("Tipo"));
+                indicador.setValor(rs.getBigDecimal("Valor"));
+                indicador.setFechaRegistro(rs.getTimestamp("FechaRegistro"));
                 indicadores.add(indicador);
             }
         } catch (SQLException e) {

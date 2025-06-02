@@ -1,4 +1,5 @@
 managment\inkluia\Presentations\InscripcionFrame$3.class
+managment\inkluia\Presentations\PostulacionFrame$8.class
 managment\inkluia\Businesslogic\Vacante.class
 managment\inkluia\Controllers\Propiedades.class
 managment\inkluia\Presentations\PostulacionFrame.class
@@ -17,11 +18,13 @@ managment\inkluia\Presentations\TipoDiscapacidadFrame$6.class
 managment\inkluia\Presentations\UsuarioFrame$6.class
 managment\inkluia\Presentations\Dashboard$6.class
 managment\inkluia\Presentations\Dashboard$4.class
+managment\inkluia\Presentations\UsuarioFrame$7.class
 managment\inkluia\Presentations\IndicadorFrame$1.class
 managment\inkluia\Presentations\CursoFrame$3.class
 managment\inkluia\Presentations\PostulacionFrame$2.class
 managment\inkluia\Presentations\CursoFrame$1.class
 managment\inkluia\Presentations\VacanteFrame$6.class
+managment\inkluia\Presentations\TipoDiscapacidadFrame$7.class
 managment\inkluia\Presentations\UsuarioFrame.class
 managment\inkluia\Businesslogic\Curso.class
 managment\inkluia\Presentations\InscripcionFrame$4.class
@@ -31,6 +34,7 @@ managment\inkluia\InkluIA.class
 managment\inkluia\Businesslogic\Postulacion.class
 managment\inkluia\Presentations\EmpresaFrame$1.class
 managment\inkluia\Presentations\CursoFrame$7.class
+managment\inkluia\Presentations\InscripcionFrame$7.class
 managment\inkluia\Presentations\VacanteFrame$3.class
 managment\inkluia\Presentations\CursoFrame$2.class
 managment\inkluia\Presentations\UsuarioFrame$1.class
@@ -50,6 +54,8 @@ managment\inkluia\Presentations\CursoFrame$6.class
 managment\inkluia\Presentations\TipoDiscapacidadFrame$4.class
 managment\inkluia\Presentations\PostulacionFrame$3.class
 managment\inkluia\Presentations\EmpresaFrame.class
+managment\inkluia\Presentations\VacanteFrame$7.class
+managment\inkluia\Presentations\CursoFrame$8.class
 managment\inkluia\Presentations\TipoDiscapacidadFrame$2.class
 managment\inkluia\Presentations\VacanteFrame$4.class
 managment\inkluia\Businesslogic\Empresa.class

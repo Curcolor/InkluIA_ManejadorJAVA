@@ -155,24 +155,28 @@ public class Empresa {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        return empresas;
-    }    // Método para obtener empresas con estadísticas de vacantes usando la vista
-    public static List<Object[]> obtenerEmpresasConVacantes() {
-        List<Object[]> empresas = new ArrayList<>();
+        }        return empresas;
+    }
+
+    public static List<Empresa> buscarPorNombre(String nombre) {
+        List<Empresa> empresas = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_EmpresasEstadisticas ORDER BY NombreEmpresa")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vw_Empresas WHERE NombreEmpresa LIKE ? ORDER BY NombreEmpresa")) {
+            
+            stmt.setString(1, "%" + nombre + "%");
+            ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Object[] empresa = {
-                    rs.getInt("IdEmpresa"),
-                    rs.getString("NombreEmpresa"),
-                    rs.getString("NIT"),
-                    rs.getString("Sector"),
-                    rs.getInt("TotalVacantes"),
-                    rs.getTimestamp("FechaRegistro")
-                };
+                Empresa empresa = new Empresa();
+                empresa.setIdEmpresa(rs.getInt("IdEmpresa"));
+                empresa.setNombreEmpresa(rs.getString("NombreEmpresa"));
+                empresa.setNit(rs.getString("NIT"));
+                empresa.setDireccion(rs.getString("Direccion"));
+                empresa.setTelefono(rs.getString("Telefono"));
+                empresa.setCorreoContacto(rs.getString("CorreoContacto"));
+                empresa.setSector(rs.getString("Sector"));
+                empresa.setDescripcion(rs.getString("Descripcion"));
+                empresa.setFechaRegistro(rs.getTimestamp("FechaRegistro"));
                 empresas.add(empresa);
             }
         } catch (SQLException e) {

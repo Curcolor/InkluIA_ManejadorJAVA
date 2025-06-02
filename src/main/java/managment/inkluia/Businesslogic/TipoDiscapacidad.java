@@ -43,6 +43,26 @@ public class TipoDiscapacidad {
         }
     }
 
+    public static TipoDiscapacidad obtener(int idDiscapacidad) {
+        try (Connection conn = ConexionDB.conectar();
+             CallableStatement stmt = conn.prepareCall("{call sp_ObtenerTipoDiscapacidad(?)}")) {
+            
+            stmt.setInt(1, idDiscapacidad);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                TipoDiscapacidad tipo = new TipoDiscapacidad();
+                tipo.setIdDiscapacidad(rs.getInt("IdDiscapacidad"));
+                tipo.setNombre(rs.getString("Nombre"));
+                tipo.setDescripcion(rs.getString("Descripcion"));
+                return tipo;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<TipoDiscapacidad> obtenerTodos() {
         List<TipoDiscapacidad> tipos = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
@@ -87,5 +107,26 @@ public class TipoDiscapacidad {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static List<TipoDiscapacidad> buscarPorNombre(String nombre) {
+        List<TipoDiscapacidad> tipos = new ArrayList<>();
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vw_TiposDiscapacidad WHERE Nombre LIKE ? ORDER BY Nombre")) {
+            
+            stmt.setString(1, "%" + nombre + "%");
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                TipoDiscapacidad tipo = new TipoDiscapacidad();
+                tipo.setIdDiscapacidad(rs.getInt("IdDiscapacidad"));
+                tipo.setNombre(rs.getString("Nombre"));
+                tipo.setDescripcion(rs.getString("Descripcion"));
+                tipos.add(tipo);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tipos;
     }
 }

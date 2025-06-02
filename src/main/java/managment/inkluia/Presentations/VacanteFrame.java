@@ -6,9 +6,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
-public class VacanteFrame extends javax.swing.JFrame {
-
-    private DefaultTableModel modeloTabla;
+public class VacanteFrame extends javax.swing.JFrame {    private DefaultTableModel modeloTabla;
+    private JButton btnBuscar;
+    private JTextField txtBusqueda;
+    private JLabel lblBuscar;
 
     public VacanteFrame() {
         initComponents();
@@ -34,9 +35,12 @@ public class VacanteFrame extends javax.swing.JFrame {
         txtRequisitos = new javax.swing.JTextArea();
         btnAgregar = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
-        btnEliminar = new javax.swing.JButton();
-        btnLimpiar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();        btnLimpiar = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
+          // Componentes de búsqueda
+        txtBusqueda = new JTextField();
+        btnBuscar = new JButton();
+        lblBuscar = new JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Vacantes");
@@ -105,6 +109,15 @@ public class VacanteFrame extends javax.swing.JFrame {
         });
 
         txtId.setEditable(false);
+          // Configuración de componentes de búsqueda
+        lblBuscar.setText("Buscar por título:");
+        txtBusqueda.setToolTipText("Buscar por título de vacante");
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -127,16 +140,19 @@ public class VacanteFrame extends javax.swing.JFrame {
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                             .addComponent(txtId))
                         .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE))                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAgregar)
                         .addGap(18, 18, 18)
                         .addComponent(btnActualizar)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnLimpiar)
-                        .addGap(18, 18, 18)))
+                        .addGap(18, 18, 18)                        .addComponent(btnLimpiar)
+                        .addGap(30, 30, 30)
+                        .addComponent(lblBuscar)
+                        .addGap(10, 10, 10)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnBuscar)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -165,12 +181,14 @@ public class VacanteFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(30, 30, 30)                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar)
-                    .addComponent(btnLimpiar))
+                    .addComponent(btnLimpiar)
+                    .addComponent(lblBuscar)
+                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -199,12 +217,21 @@ public class VacanteFrame extends javax.swing.JFrame {
                 vacante.getFechaPublicacion()
             };
             modeloTabla.addRow(fila);
-        }
-    }    private void cargarDatosConVista() {
+        }    }
+
+    private void cargarDatosConVista() {
         modeloTabla.setRowCount(0);
-        List<Object[]> vacantes = Vacante.obtenerVacantesConEmpresas();
-        for (Object[] vacante : vacantes) {
-            modeloTabla.addRow(vacante);
+        List<Vacante> vacantes = Vacante.obtenerTodas();
+        for (Vacante vacante : vacantes) {
+            Object[] fila = {
+                vacante.getIdVacante(),
+                obtenerNombreEmpresa(vacante.getIdEmpresa()),
+                vacante.getTitulo(),
+                vacante.getDescripcion(),
+                vacante.getRequisitos(),
+                vacante.getFechaPublicacion()
+            };
+            modeloTabla.addRow(fila);
         }
     }private String obtenerNombreEmpresa(int idEmpresa) {
         Empresa empresa = Empresa.obtener(idEmpresa);
@@ -319,8 +346,42 @@ public class VacanteFrame extends javax.swing.JFrame {
         txtId.setText("");
         if (cmbEmpresa.getItemCount() > 0) cmbEmpresa.setSelectedIndex(0);
         txtTitulo.setText("");
-        txtDescripcion.setText("");
-        txtRequisitos.setText("");
+        txtDescripcion.setText("");        txtRequisitos.setText("");
+    }
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        String tituloBusqueda = txtBusqueda.getText().trim();
+        
+        if (tituloBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todas las vacantes
+            return;
+        }
+
+        try {
+            List<Vacante> vacantesEncontradas = Vacante.buscarPorTitulo(tituloBusqueda);
+            modeloTabla.setRowCount(0);
+            
+            for (Vacante vacante : vacantesEncontradas) {
+                Object[] fila = {
+                    vacante.getIdVacante(),
+                    obtenerNombreEmpresa(vacante.getIdEmpresa()),
+                    vacante.getTitulo(),
+                    vacante.getDescripcion(),
+                    vacante.getFechaPublicacion()
+                };
+                modeloTabla.addRow(fila);
+            }
+            
+            if (vacantesEncontradas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron vacantes con el título: " + tituloBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar vacantes: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Variables declaration

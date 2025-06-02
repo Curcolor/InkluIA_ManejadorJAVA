@@ -52,6 +52,28 @@ public class Postulacion {
         }
     }
 
+    public static Postulacion obtener(int idPostulacion) {
+        try (Connection conn = ConexionDB.conectar();
+             CallableStatement stmt = conn.prepareCall("{call sp_ObtenerPostulacion(?)}")) {
+            
+            stmt.setInt(1, idPostulacion);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Postulacion postulacion = new Postulacion();
+                postulacion.setIdPostulacion(rs.getInt("IdPostulacion"));
+                postulacion.setIdUsuario(rs.getInt("IdUsuario"));
+                postulacion.setIdVacante(rs.getInt("IdVacante"));
+                postulacion.setFechaPostulacion(rs.getTimestamp("FechaPostulacion"));
+                postulacion.setEstado(rs.getString("Estado"));
+                return postulacion;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<Postulacion> obtenerTodas() {
         List<Postulacion> postulaciones = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
@@ -95,24 +117,24 @@ public class Postulacion {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
-        }
-    }    // Método para obtener postulaciones con detalle usando la vista
-    public static List<Object[]> obtenerPostulacionesDetalle() {
-        List<Object[]> postulaciones = new ArrayList<>();
+            return false;        }
+    }
+
+    public static List<Postulacion> buscarPorEstado(String estado) {
+        List<Postulacion> postulaciones = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_PostulacionesCompletas ORDER BY FechaPostulacion DESC")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vw_Postulaciones WHERE Estado LIKE ? ORDER BY FechaPostulacion DESC")) {
+            
+            stmt.setString(1, "%" + estado + "%");
+            ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-                Object[] postulacion = {
-                    rs.getInt("IdPostulacion"),
-                    rs.getString("NombreTalento"),
-                    rs.getString("TituloVacante"),
-                    rs.getString("NombreEmpresa"),
-                    rs.getString("Estado"),
-                    rs.getTimestamp("FechaPostulacion")
-                };
+                Postulacion postulacion = new Postulacion();
+                postulacion.setIdPostulacion(rs.getInt("IdPostulacion"));
+                postulacion.setIdUsuario(rs.getInt("IdUsuario"));
+                postulacion.setIdVacante(rs.getInt("IdVacante"));
+                postulacion.setFechaPostulacion(rs.getTimestamp("FechaPostulacion"));
+                postulacion.setEstado(rs.getString("Estado"));
                 postulaciones.add(postulacion);
             }
         } catch (SQLException e) {

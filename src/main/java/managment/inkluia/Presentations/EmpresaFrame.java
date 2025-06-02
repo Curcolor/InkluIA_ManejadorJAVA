@@ -13,7 +13,8 @@ public class EmpresaFrame extends JFrame {
     private DefaultTableModel modeloTabla;
     private JTextField txtNombreEmpresa, txtNIT, txtDireccion, txtTelefono, txtCorreo, txtSector;
     private JTextArea txtDescripcion;
-    private JButton btnAgregar, btnEditar, btnEliminar, btnLimpiar, btnRefrescar, btnVerConVacantes;
+    private JButton btnAgregar, btnEditar, btnEliminar, btnLimpiar, btnRefrescar, btnVerConVacantes, btnBuscar;
+    private JTextField txtBusqueda;
     private int idSeleccionado = -1;
 
     public EmpresaFrame() {
@@ -103,8 +104,16 @@ public class EmpresaFrame extends JFrame {
         panelBotones.add(btnLimpiar);
         panelBotones.add(btnRefrescar);
         panelBotones.add(btnVerConVacantes);
-        
-        panelFormulario.add(panelBotones, gbc);
+          panelFormulario.add(panelBotones, gbc);
+
+        // Panel de búsqueda
+        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelBusqueda.setBorder(BorderFactory.createTitledBorder("Búsqueda"));
+        panelBusqueda.add(new JLabel("Buscar por nombre:"));
+        txtBusqueda = new JTextField(20);
+        panelBusqueda.add(txtBusqueda);
+        btnBuscar = new JButton("Buscar");
+        panelBusqueda.add(btnBuscar);
 
         // Tabla
         String[] columnas = {"ID", "Nombre Empresa", "NIT", "Sector", "Teléfono", "Correo", "Fecha Registro"};
@@ -128,19 +137,19 @@ public class EmpresaFrame extends JFrame {
                     cargarDatosFormulario(selectedRow);
                 }
             }
-        });
-
-        // Agregar eventos a botones
+        });        // Agregar eventos a botones
         btnAgregar.addActionListener(e -> agregarEmpresa());
         btnEditar.addActionListener(e -> editarEmpresa());
         btnEliminar.addActionListener(e -> eliminarEmpresa());
         btnLimpiar.addActionListener(e -> limpiarFormulario());
         btnRefrescar.addActionListener(e -> cargarDatos());
         btnVerConVacantes.addActionListener(e -> cargarDatosConVacantes());
+        btnBuscar.addActionListener(e -> buscarEmpresa());
 
         // Agregar componentes al panel principal
         panelPrincipal.add(panelFormulario, BorderLayout.NORTH);
-        panelPrincipal.add(scrollPane, BorderLayout.CENTER);
+        panelPrincipal.add(panelBusqueda, BorderLayout.CENTER);
+        panelPrincipal.add(scrollPane, BorderLayout.SOUTH);
 
         add(panelPrincipal, BorderLayout.CENTER);
 
@@ -178,24 +187,33 @@ public class EmpresaFrame extends JFrame {
             JOptionPane.showMessageDialog(this, 
                 "Error al cargar las empresas: " + e.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+        }    }
 
     private void cargarDatosConVacantes() {
         try {
-            List<Object[]> empresas = Empresa.obtenerEmpresasConVacantes();
+            List<Empresa> empresas = Empresa.obtenerTodas();
             modeloTabla.setRowCount(0);
             
-            // Actualizar columnas para vista con vacantes
-            String[] columnas = {"ID", "Nombre Empresa", "NIT", "Sector", "Total Vacantes", "Fecha Registro"};
+            // Usar columnas estándar
+            String[] columnas = {"ID", "Nombre Empresa", "NIT", "Dirección", "Teléfono", "Email", "Sector", "Descripción"};
             modeloTabla.setColumnIdentifiers(columnas);
             
-            for (Object[] empresa : empresas) {
-                modeloTabla.addRow(empresa);
+            for (Empresa empresa : empresas) {
+                Object[] fila = {
+                    empresa.getIdEmpresa(),
+                    empresa.getNombreEmpresa(),
+                    empresa.getNit(),
+                    empresa.getDireccion(),
+                    empresa.getTelefono(),
+                    empresa.getCorreoContacto(),
+                    empresa.getSector(),
+                    empresa.getDescripcion()
+                };
+                modeloTabla.addRow(fila);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
-                "Error al cargar las empresas con vacantes: " + e.getMessage(), 
+                "Error al cargar las empresas: " + e.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -340,8 +358,47 @@ public class EmpresaFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "El NIT es obligatorio");
             txtNIT.requestFocus();
             return false;
+        }        return true;
+    }
+
+    private void buscarEmpresa() {
+        String nombreBusqueda = txtBusqueda.getText().trim();
+        
+        if (nombreBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todas las empresas
+            return;
         }
 
-        return true;
+        try {
+            List<Empresa> empresasEncontradas = Empresa.buscarPorNombre(nombreBusqueda);
+            modeloTabla.setRowCount(0);
+            
+            // Usar columnas estándar
+            String[] columnas = {"ID", "Nombre Empresa", "NIT", "Sector", "Teléfono", "Correo", "Fecha Registro"};
+            modeloTabla.setColumnIdentifiers(columnas);
+            
+            for (Empresa empresa : empresasEncontradas) {
+                Object[] fila = {
+                    empresa.getIdEmpresa(),
+                    empresa.getNombreEmpresa(),
+                    empresa.getNit(),
+                    empresa.getSector(),
+                    empresa.getTelefono(),
+                    empresa.getCorreoContacto(),
+                    empresa.getFechaRegistro()
+                };
+                modeloTabla.addRow(fila);
+            }
+            
+            if (empresasEncontradas.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron empresas con el nombre: " + nombreBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar empresas: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

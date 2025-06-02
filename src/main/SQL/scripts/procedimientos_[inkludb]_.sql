@@ -318,3 +318,43 @@ AS
 BEGIN
     DELETE FROM Empresas WHERE IdEmpresa = @IdEmpresa;
 END;
+
+-- Obtener vacante individual
+CREATE PROCEDURE sp_ObtenerVacante
+    @IdVacante INT
+AS
+BEGIN
+    SELECT * FROM Vacantes WHERE IdVacante = @IdVacante;
+END;
+
+-- Obtener curso individual
+CREATE PROCEDURE sp_ObtenerCurso
+    @IdCurso INT
+AS
+BEGIN
+    SELECT * FROM Cursos WHERE IdCurso = @IdCurso;
+END;
+
+-- Obtener postulación individual
+CREATE PROCEDURE sp_ObtenerPostulacion
+    @IdPostulacion INT
+AS
+BEGIN
+    SELECT * FROM Postulaciones WHERE IdPostulacion = @IdPostulacion;
+END;
+
+-- Obtener indicador individual
+CREATE PROCEDURE sp_ObtenerIndicador
+    @IdIndicador INT
+AS
+BEGIN
+    SELECT * FROM Indicadores WHERE IdIndicador = @IdIndicador;
+END;
+
+-- Obtener tipo de discapacidad individual
+CREATE PROCEDURE sp_ObtenerTipoDiscapacidad
+    @IdDiscapacidad INT
+AS
+BEGIN
+    SELECT * FROM TiposDiscapacidad WHERE IdDiscapacidad = @IdDiscapacidad;
+END;

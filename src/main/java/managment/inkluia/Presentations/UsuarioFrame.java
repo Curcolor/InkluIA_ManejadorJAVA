@@ -37,6 +37,9 @@ public class UsuarioFrame extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
         txtId = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        txtBusqueda = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Usuarios");
@@ -102,6 +105,15 @@ public class UsuarioFrame extends javax.swing.JFrame {
 
         txtId.setEditable(false);
 
+        jLabel7.setText("Buscar por nombre:");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -122,7 +134,10 @@ public class UsuarioFrame extends javax.swing.JFrame {
                             .addComponent(cmbRol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel6)
                             .addComponent(cmbDiscapacidad, 0, 250, Short.MAX_VALUE)
-                            .addComponent(txtId))
+                            .addComponent(txtId)
+                            .addComponent(jLabel7)
+                            .addComponent(txtBusqueda)
+                            .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(30, 30, 30)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -163,7 +178,13 @@ public class UsuarioFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbDiscapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cmbDiscapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBuscar))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -310,6 +331,27 @@ public class UsuarioFrame extends javax.swing.JFrame {
         }
     }
 
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        String nombreBusqueda = txtBusqueda.getText().trim();
+        if (nombreBusqueda.isEmpty()) {
+            cargarDatos();
+        } else {
+            modeloTabla.setRowCount(0);
+            List<Usuario> usuarios = Usuario.buscarPorNombre(nombreBusqueda);
+            for (Usuario usuario : usuarios) {
+                Object[] fila = {
+                    usuario.getIdUsuario(),
+                    usuario.getNombreCompleto(),
+                    usuario.getCorreo(),
+                    usuario.getRol(),
+                    obtenerNombreDiscapacidad(usuario.getIdDiscapacidad()),
+                    usuario.getFechaRegistro()
+                };
+                modeloTabla.addRow(fila);
+            }
+        }
+    }
+
     private boolean validarCampos() {
         if (txtNombre.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "El nombre es obligatorio");
@@ -333,11 +375,13 @@ public class UsuarioFrame extends javax.swing.JFrame {
         txtContrasena.setText("");
         cmbRol.setSelectedIndex(0);
         cmbDiscapacidad.setSelectedIndex(0);
+        txtBusqueda.setText("");
     }
 
     // Variables declaration
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JComboBox<String> cmbDiscapacidad;
@@ -348,10 +392,12 @@ public class UsuarioFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tablaUsuarios;
     private javax.swing.JPasswordField txtContrasena;
     private javax.swing.JTextField txtCorreo;
     private javax.swing.JTextField txtId;
     private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtBusqueda;
 }

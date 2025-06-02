@@ -43,6 +43,25 @@ public class CursoUsuario {
         }
     }
 
+    public static CursoUsuario obtener(int idUsuario) {
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM CursoUsuario WHERE IdUsuario = ?")) {
+            
+            stmt.setInt(1, idUsuario);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                CursoUsuario inscripcion = new CursoUsuario();
+                inscripcion.setIdUsuario(rs.getInt("IdUsuario"));
+                inscripcion.setFechaInscripcion(rs.getTimestamp("FechaInscripcion"));
+                return inscripcion;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<CursoUsuario> obtenerTodas() {
         List<CursoUsuario> inscripciones = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
@@ -71,30 +90,6 @@ public class CursoUsuario {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
-        }
-    }
-
-    // Método para obtener cursos inscritos con detalle usando la vista
-    public static List<Object[]> obtenerCursosInscritos() {
-        List<Object[]> inscripciones = new ArrayList<>();
-        try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_CursosInscritos")) {
-            
-            while (rs.next()) {
-                Object[] inscripcion = {
-                    rs.getInt("IdCurso"),
-                    rs.getString("Titulo"),
-                    rs.getInt("IdUsuario"),
-                    rs.getString("NombreCompleto"),
-                    rs.getTimestamp("FechaInscripcion")
-                };
-                inscripciones.add(inscripcion);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return inscripciones;
+            return false;        }
     }
 }

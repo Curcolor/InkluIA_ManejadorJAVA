@@ -10,6 +10,9 @@ import java.util.List;
 public class InscripcionFrame extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTabla;
+    private JButton btnBuscar;
+    private JTextField txtBusqueda;
+    private JLabel lblBuscar;
 
     public InscripcionFrame() {
         initComponents();
@@ -32,6 +35,11 @@ public class InscripcionFrame extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
         btnVerDetalle = new javax.swing.JButton();
+        
+        // Componentes de búsqueda
+        txtBusqueda = new JTextField();
+        btnBuscar = new JButton();
+        lblBuscar = new JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de Inscripciones a Cursos");
@@ -78,12 +86,20 @@ public class InscripcionFrame extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLimpiarActionPerformed(evt);
             }
-        });
-
-        btnVerDetalle.setText("Ver Detalle (Vista)");
+        });        btnVerDetalle.setText("Ver Detalle (Vista)");
         btnVerDetalle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVerDetalleActionPerformed(evt);
+            }
+        });
+        
+        // Configuración de componentes de búsqueda
+        lblBuscar.setText("Buscar por usuario:");
+        txtBusqueda.setToolTipText("Buscar por nombre de usuario");
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
             }
         });
 
@@ -107,10 +123,15 @@ public class InscripcionFrame extends javax.swing.JFrame {
                         .addComponent(btnInscribir)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar)
+                        .addGap(18, 18, 18)                        .addComponent(btnLimpiar)
                         .addGap(18, 18, 18)
-                        .addComponent(btnLimpiar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnVerDetalle)))
+                        .addComponent(btnVerDetalle)
+                        .addGap(30, 30, 30)
+                        .addComponent(lblBuscar)
+                        .addGap(10, 10, 10)
+                        .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnBuscar)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -129,12 +150,14 @@ public class InscripcionFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmbUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(30, 30, 30)                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInscribir)
                     .addComponent(btnEliminar)
                     .addComponent(btnLimpiar)
-                    .addComponent(btnVerDetalle))
+                    .addComponent(btnVerDetalle)
+                    .addComponent(lblBuscar)
+                    .addComponent(txtBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -173,25 +196,26 @@ public class InscripcionFrame extends javax.swing.JFrame {
                 inscripcion.getFechaInscripcion()
             };
             modeloTabla.addRow(fila);
-        }
-    }
+        }    }
 
     private void cargarDatosConVista() {
         modeloTabla.setRowCount(0);
-        List<Object[]> inscripciones = CursoUsuario.obtenerCursosInscritos();
-        for (Object[] inscripcion : inscripciones) {
-            modeloTabla.addRow(inscripcion);
+        List<CursoUsuario> inscripciones = CursoUsuario.obtenerTodas();
+        for (CursoUsuario inscripcion : inscripciones) {
+            Object[] fila = {
+                inscripcion.getIdCurso(),
+                obtenerTituloCurso(inscripcion.getIdCurso()),
+                inscripcion.getIdUsuario(),
+                obtenerNombreUsuario(inscripcion.getIdUsuario()),
+                inscripcion.getFechaInscripcion()
+            };
+            modeloTabla.addRow(fila);
         }
     }
 
     private String obtenerTituloCurso(int idCurso) {
-        List<Curso> cursos = Curso.obtenerTodos();
-        for (Curso curso : cursos) {
-            if (curso.getIdCurso() == idCurso) {
-                return curso.getTitulo();
-            }
-        }
-        return "Curso no encontrado";
+        Curso curso = Curso.obtener(idCurso);
+        return curso != null ? curso.getTitulo() : "Curso no encontrado";
     }
 
     private String obtenerNombreUsuario(int idUsuario) {
@@ -290,8 +314,61 @@ public class InscripcionFrame extends javax.swing.JFrame {
     }
 
     private void limpiarCampos() {
-        if (cmbCurso.getItemCount() > 0) cmbCurso.setSelectedIndex(0);
-        if (cmbUsuario.getItemCount() > 0) cmbUsuario.setSelectedIndex(0);
+        if (cmbCurso.getItemCount() > 0) cmbCurso.setSelectedIndex(0);        if (cmbUsuario.getItemCount() > 0) cmbUsuario.setSelectedIndex(0);
+    }    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        String nombreBusqueda = txtBusqueda.getText().trim();
+        
+        if (nombreBusqueda.isEmpty()) {
+            cargarDatos(); // Si no hay texto de búsqueda, mostrar todas las inscripciones
+            return;
+        }
+
+        try {
+            // Buscar usuarios por nombre
+            List<Usuario> usuariosEncontrados = Usuario.buscarPorNombre(nombreBusqueda);
+            
+            // Si no encontramos usuarios, mostrar mensaje y salir
+            if (usuariosEncontrados.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                    "No se encontraron usuarios con el nombre: " + nombreBusqueda, 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            
+            // Limpiar la tabla
+            modeloTabla.setRowCount(0);
+            
+            // Obtener todas las inscripciones
+            List<CursoUsuario> todasInscripciones = CursoUsuario.obtenerTodas();
+            
+            // Filtrar las inscripciones para mostrar solo las de los usuarios encontrados
+            for (CursoUsuario inscripcion : todasInscripciones) {
+                for (Usuario usuario : usuariosEncontrados) {
+                    if (inscripcion.getIdUsuario() == usuario.getIdUsuario()) {
+                        Object[] fila = {
+                            inscripcion.getIdCurso(),
+                            obtenerTituloCurso(inscripcion.getIdCurso()),
+                            inscripcion.getIdUsuario(),
+                            usuario.getNombreCompleto(),
+                            inscripcion.getFechaInscripcion()
+                        };
+                        modeloTabla.addRow(fila);
+                        break; // Ya encontramos el usuario correspondiente, no necesitamos seguir buscando
+                    }
+                }
+            }
+            
+            // Si no hay filas después de filtrar, significa que los usuarios encontrados no tienen inscripciones
+            if (modeloTabla.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, 
+                    "Los usuarios encontrados no tienen inscripciones", 
+                    "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al buscar inscripciones: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Variables declaration

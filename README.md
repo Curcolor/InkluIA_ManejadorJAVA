@@ -29,6 +29,14 @@ src/main/java/managment/inkluia/
 1. SQL Server Express instalado
 2. Base de datos `inkludb` creada
 3. Usuario `inkluia` con contraseña `hackathon2025`
+4. Protocolo TCP/IP activado en SQL Server Configuration Manager
+
+### Configuración del Protocolo TCP/IP
+Para que Java pueda conectarse correctamente a SQL Server, es necesario:
+1. Abrir "SQL Server Configuration Manager"
+2. Navegar a "Configuración de red de SQL Server" > "Protocolos para SQLEXPRESS"
+3. Asegurarse que el protocolo TCP/IP esté habilitado (clic derecho > Habilitar)
+4. Reiniciar el servicio de SQL Server después de hacer cambios
 
 ### Configuración
 El archivo `src/main/properties/Inkludb.properties` contiene:
@@ -141,6 +149,7 @@ Cada tabla tiene procedimientos para:
 2. Asegurarse de que todos los scripts SQL hayan sido ejecutados
 3. Actualizar la configuración de conexión según tu entorno
 4. Los IDs de usuario en algunos métodos están hardcodeados para pruebas
+5. **Ver archivo `src/main/docs/NOTAS_IMPORTANTES.md` para información detallada sobre la configuración de SQL Server y resolución de problemas comunes**
 
 ## Mantenimiento
 - Las clases están organizadas por funcionalidad

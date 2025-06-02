@@ -57,11 +57,58 @@ public class Vacante {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static Vacante obtener(int idVacante) {
+        try (Connection conn = ConexionDB.conectar();
+             CallableStatement stmt = conn.prepareCall("{call sp_ObtenerVacantes(?)}")) {
+            
+            stmt.setInt(1, idVacante);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Vacante vacante = new Vacante();
+                vacante.setIdVacante(rs.getInt("IdVacante"));
+                vacante.setIdEmpresa(rs.getInt("IdEmpresa"));
+                vacante.setTitulo(rs.getString("Titulo"));
+                vacante.setDescripcion(rs.getString("Descripcion"));
+                vacante.setRequisitos(rs.getString("Requisitos"));
+                vacante.setFechaPublicacion(rs.getTimestamp("FechaPublicacion"));
+                return vacante;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }    public static List<Vacante> obtenerTodas() {
         List<Vacante> vacantes = new ArrayList<>();
         try (Connection conn = ConexionDB.conectar();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM vw_Vacantes ORDER BY FechaPublicacion DESC")) {
+            
+            while (rs.next()) {
+                Vacante vacante = new Vacante();
+                vacante.setIdVacante(rs.getInt("IdVacante"));
+                vacante.setIdEmpresa(rs.getInt("IdEmpresa"));
+                vacante.setTitulo(rs.getString("Titulo"));
+                vacante.setDescripcion(rs.getString("Descripcion"));
+                vacante.setRequisitos(rs.getString("Requisitos"));
+                vacante.setFechaPublicacion(rs.getTimestamp("FechaPublicacion"));
+                vacantes.add(vacante);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return vacantes;
+    }
+
+    public static List<Vacante> buscarPorTitulo(String titulo) {
+        List<Vacante> vacantes = new ArrayList<>();
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM vw_Vacantes WHERE Titulo LIKE ? ORDER BY FechaPublicacion DESC")) {
+            
+            stmt.setString(1, "%" + titulo + "%");
+            ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
                 Vacante vacante = new Vacante();
@@ -104,28 +151,5 @@ public class Vacante {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        }
-    }    // Método para obtener vacantes con información de empresa usando la vista
-    public static List<Object[]> obtenerVacantesConEmpresas() {
-        List<Object[]> vacantes = new ArrayList<>();
-        try (Connection conn = ConexionDB.conectar();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM vw_VacantesCompletas ORDER BY FechaPublicacion DESC")) {
-            
-            while (rs.next()) {
-                Object[] vacante = {
-                    rs.getInt("IdVacante"),
-                    rs.getString("NombreEmpresa"),
-                    rs.getString("Titulo"),
-                    rs.getString("Descripcion"),
-                    rs.getString("SectorEmpresa"),
-                    rs.getTimestamp("FechaPublicacion")
-                };
-                vacantes.add(vacante);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return vacantes;
-    }
+        }    }
 }
